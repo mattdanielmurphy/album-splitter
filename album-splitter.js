@@ -14,36 +14,37 @@ function cleanName(name) {
 }
 
 async function makeTrack(song, releaseInfo, saveDirectory) {
+  const fileExtension = /(?:\.([^.]+))?$/.exec(pathToAudioFile)[0]
+  const fileName = `${song.trackNumber}-${
+    cleanName(song.title) + fileExtension
+  }`
+  const savePath = path.join(saveDirectory, fileName)
+  const command = `ffmpeg -y -nostdin -loglevel 16 -i "${pathToAudioFile}" -ss "${
+    song.startTime
+  }" ${
+    song.endTime ? `-to "${song.endTime}"` : ''
+  } -vn -c copy -metadata track="${song.trackNumber}" -metadata title="${
+    song.title
+  }" -metadata artist="${releaseInfo.artist}" -metadata album_artist="${
+    releaseInfo.artist
+  }" -metadata album="${releaseInfo.album}" -metadata year="${
+    releaseInfo.year
+  }" -metadata genre="${releaseInfo.genre}" "${savePath}"`
   try {
-    const fileExtension = /(?:\.([^.]+))?$/.exec(pathToAudioFile)[0]
-    const fileName = `${song.trackNumber}-${
-      cleanName(song.title) + fileExtension
-    }`
-    const savePath = path.join(__dirname, saveDirectory, fileName)
-    await exec(
-      `ffmpeg -nostdin -y -loglevel -8 -i "${pathToAudioFile}" -ss ${
-        song.startTime
-      } ${
-        song.endTime ? `-to ${song.endTime}` : ''
-      } -vn -c copy -metadata track="${song.trackNumber}" -metadata title="${
-        song.title
-      }" -metadata artist="${releaseInfo.artist}" -metadata album_artist="${
-        releaseInfo.artist
-      }" -metadata album="${releaseInfo.album}" -metadata year="${
-        releaseInfo.year
-      }" "${savePath}"`,
-    )
+    await exec(command)
     console.log(`${fileName} saved successfully.`)
   } catch (e) {
-    console.log(e.code)
-    console.log(e.msg)
+    console.log(`ERROR at track #${song.trackNumber}\n`, e.stderr)
   }
 }
 
 async function sliceAudioIntoTracks(songs, releaseInfo) {
   const cleanAlbumName = cleanName(releaseInfo.album)
   const cleanArtistName = cleanName(releaseInfo.artist)
-  const saveDirectory = `${cleanAlbumName}-${cleanArtistName}`
+  const saveDirectory = path.join(
+    __dirname,
+    `${cleanAlbumName}-${cleanArtistName}`,
+  )
   if (!fsSync.existsSync(saveDirectory)) {
     await fs.mkdir(saveDirectory, 0744)
   }
@@ -52,15 +53,12 @@ async function sliceAudioIntoTracks(songs, releaseInfo) {
       async (song) => await makeTrack(song, releaseInfo, saveDirectory),
     ),
   )
-  console.log(`Done. Files saved to ${path.join(__dirname, saveDirectory)}`)
+  console.log(`Done. Files saved to ${saveDirectory}`)
 }
 
 async function getSongTitlesAndTimestamps() {
   try {
     const data = await fs.readFile(pathToTimestampsFile, 'utf8')
-    // supported formats (& every timestamp permutation):
-    //   [hh:]mm:ss song title
-    //   [h:]m:s song title
     const songs = data.split('\n').map((song, index) => {
       const matches = song.match(/(\d?\d:\d\d:?\d?\d?)\s(.*)/)
       // prepend leading zeros if necessary
@@ -93,12 +91,23 @@ async function getReleaseInfoFromUser() {
       message: 'What is the name of the artist?',
     },
     {
+      type: 'text',
+      name: 'genre',
+      message: 'What is the genre?',
+    },
+    {
       type: 'number',
       name: 'year',
       message: 'What is the year this album was released?',
     },
   ]
-
+  // Testing:
+  // return {
+  //   album: 'Album Name',
+  //   artist: 'Artist Name',
+  //   genre: 'Genre Name',
+  //   year: 2112,
+  // }
   return await prompts(questions)
 }
 
@@ -107,6 +116,7 @@ async function splitAlbum() {
     getSongTitlesAndTimestamps(),
     getReleaseInfoFromUser(),
   ])
+
   sliceAudioIntoTracks(songTitlesAndTimestamps, releaseInfo)
 }
 
