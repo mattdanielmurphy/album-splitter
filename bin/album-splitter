@@ -43,7 +43,7 @@ async function sliceAudioIntoTracks(songs, releaseInfo) {
   const cleanAlbumName = cleanName(releaseInfo.album)
   const cleanArtistName = cleanName(releaseInfo.artist)
   const saveDirectory = path.join(
-    __dirname,
+    process.cwd(),
     `${cleanAlbumName}-${cleanArtistName}`,
   )
   if (!fsSync.existsSync(saveDirectory)) {
