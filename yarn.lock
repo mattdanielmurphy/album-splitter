@@ -2,13 +2,6 @@
 # yarn lockfile v1
 
 
-ffmpeg@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/ffmpeg/-/ffmpeg-0.0.4.tgz#1c460df8e7da5127f62ceef4bfa06c59c89630cb"
-  integrity sha1-HEYN+OfaUSf2LO70v6BsWciWMMs=
-  dependencies:
-    when ">= 0.0.1"
-
 kleur@^3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
@@ -26,8 +19,3 @@ sisteransi@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-1.0.5.tgz#134d681297756437cc05ca01370d3a7a571075ed"
   integrity sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==
-
-"when@>= 0.0.1":
-  version "3.7.8"
-  resolved "https://registry.yarnpkg.com/when/-/when-3.7.8.tgz#c7130b6a7ea04693e842cdc9e7a1f2aa39a39f82"
-  integrity sha1-xxMLan6gRpPoQs3J56Hyqjmjn4I=
