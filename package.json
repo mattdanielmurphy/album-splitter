@@ -1,12 +1,18 @@
 {
-  "dependencies": {
-    "prompts": "^2.4.0"
-  },
   "name": "album-splitter",
   "version": "1.0.0",
   "description": "Split an audio file into separate tracks given a file with timestamps.",
   "main": "album-splitter.js",
+  "bin": {
+    "album-splitter": "bin/album-splitter"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": "git@github.com:mattdanielmurphy/album-splitter.git",
   "author": "Matthew Daniel Murphy <matt@mattmurphy.ca>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "prompts": "^2.4.0"
+  }
 }
